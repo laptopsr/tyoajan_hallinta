@@ -1,7 +1,7 @@
 {
      "android": {
          "release": {
-             "keystore": "tyoajan_hallinta.keystore",
+             "keystore": "tyoajan_hallinta.store",
              "storePassword": "111111",
              "alias": "tyoajan_hallinta",
              "password" : "111111",

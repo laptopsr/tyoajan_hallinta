@@ -137,7 +137,9 @@ return array(
     'rules'=>array(
         'posts/<tag:.*?>'=>'viivakoodi/index',
         // REST patterns
-        array('api/tag', 'pattern'=>'api/<model:\w+>/tag', 'verb'=>'POST'),
+        array('api/tarkistaminen', 'pattern'=>'api/<model:\w+>/tarkistaminen', 'verb'=>'POST'),
+        array('api/luorivi', 'pattern'=>'api/<model:\w+>/luorivi', 'verb'=>'POST'),
+        array('api/suljerivi', 'pattern'=>'api/<model:\w+>/suljerivi', 'verb'=>'POST'),
         // Other controllers
         '<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
     ),

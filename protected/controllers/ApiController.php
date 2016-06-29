@@ -108,7 +108,7 @@ public function actionTiedosto($dom)
 
 
 
-public function actionTag()
+public function actionTarkistaminen()
 {
 
 //$this->_checkAuth();
@@ -118,7 +118,91 @@ public function actionTag()
         // Get an instance of the respective model
         case 'tags':
 
-		$this->_sendResponse(200, CJSON::encode('test'));
+		$tt = Tyontekijat::model()->find(" tag_id='".$_POST['tag_id']."' ");
+
+		$criteria=new CDbCriteria;
+		$criteria->order = " id DESC ";
+		$criteria->condition = " tag_id='".$_POST['tag_id']."' ";
+		$tags = Tags::model()->find($criteria);
+
+		if(!isset($tt->id))
+		{
+			$bd = '<h1>Työntekijä ei löyty!!!</h1>';
+			$this->_sendResponse(200, CJSON::encode($bd));
+			exit;
+		}
+
+
+		if(isset($tt->id) and 
+			(!isset($tags->id) or (isset($tags->id) 
+				and $tags->status != 1 and $tags->status != 2
+			))
+		)
+		{
+			$bd = '';
+			$bd .= '<h1>Tervetuloa '.$tt->etunimi.' '.$tt->sukunimi.'</h1>';
+			$bd .= '
+			<center>
+			<p>
+			    <h2>ALOITUS</h2>
+			    <p><button class="btn btn-lg btn-primary btn-block tyo">TYÖ</button></p>
+			    <p><button class="btn btn-lg btn-primary btn-block lounastauko">LOUNASTAUKO</button></p>
+			</p>
+			</center>';
+			$result = array(
+				'tyontekija'=>$tt->id,
+				'bd'=>$bd,
+			);
+
+			$this->_sendResponse(200, CJSON::encode($result));
+			exit;
+		}
+
+
+		if(isset($tt->id) and 
+			 (isset($tags->id) and $tags->status == 1)
+		)
+		{
+			$bd = '';
+			$bd .= '<h1>Tervetuloa '.$tt->etunimi.' '.$tt->sukunimi.'</h1>';
+			$bd .= '
+			<center>
+			<p>
+			    <h2>LOPETUS</h2>
+			    <p><button class="btn btn-lg btn-warning btn-block tyolopetus" tags="'.$tags->id.'">TYÖ</button></p>
+			</p>
+			</center>';
+			$result = array(
+				'tyontekija'=>$tt->id,
+				'bd'=>$bd,
+			);
+
+			$this->_sendResponse(200, CJSON::encode($result));
+			exit;
+		}
+
+		if(isset($tt->id) and 
+			 (isset($tags->id) and $tags->status == 2)
+		)
+		{
+			$bd = '';
+			$bd .= '<h1>Tervetuloa '.$tt->etunimi.' '.$tt->sukunimi.'</h1>';
+			$bd .= '
+			<center>
+			<p>
+			    <h2>LOPETUS</h2>
+			    <p><button class="btn btn-lg btn-warning btn-block lounastaukolopetus" tags="'.$tags->id.'">LOUNASTAUKO</button></p>
+			</p>
+			</center>';
+			$result = array(
+				'tyontekija'=>$tt->id,
+				'bd'=>$bd,
+			);
+
+			$this->_sendResponse(200, CJSON::encode($result));
+			exit;
+		}
+
 
             break;
         default:
@@ -129,6 +213,146 @@ public function actionTag()
     }
 
 }
+
+
+
+
+public function actionLuorivi()
+{
+
+//$this->_checkAuth();
+
+    switch($_GET['model'])
+    {
+        // Get an instance of the respective model
+        case 'tags':
+
+		$tt = Tyontekijat::model()->findbypk($_POST['tyontekija']);
+
+		if(!isset($tt->id))
+		{
+			$bd = '<h1>Työntekijä ei löyty!!!</h1>';
+			$this->_sendResponse(200, CJSON::encode($bd));
+			exit;
+		}
+
+
+		if(isset($tt->id))
+		{
+
+			$model = new Tags;
+			$model->tid = $tt->id;
+			$model->tag_id = $tt->tag_id;
+			$model->etunimi = $tt->etunimi;
+			$model->sukunimi = $tt->sukunimi;
+			$model->aloitus = date("Y-m-d H:i:s");
+			$model->status = $_POST['status'];
+			if($model->save())
+			{
+
+				$bd = '';
+				$bd .= '
+				<center>
+				<p>
+				    <h1>'.$model->etunimi.' '.$model->sukunimi.'</h1><br>
+				    <h3>Aloitus: '.date("d.m.Y H:i", strtotime($model->aloitus)).'</h3>
+				</p>
+				</center>';
+	
+				$this->_sendResponse(200, CJSON::encode($bd));
+				exit;
+			} else {
+				$err = var_dump($model->getErrors());
+				$this->_sendResponse(200, CJSON::encode($err));
+				exit;
+			}
+		}
+
+            break;
+        default:
+            $this->_sendResponse(501, 
+                sprintf('Mode <b>create</b> is not implemented for model <b>%s</b>',
+                $_GET['model']) );
+                Yii::app()->end();
+    }
+
+}
+
+
+
+
+
+
+public function actionSuljerivi()
+{
+
+//$this->_checkAuth();
+
+    switch($_GET['model'])
+    {
+        // Get an instance of the respective model
+        case 'tags':
+
+		$tt = Tyontekijat::model()->findbypk($_POST['tyontekija']);
+		$tags = Tags::model()->findbypk($_POST['tags']);
+
+		if(!isset($tt->id))
+		{
+			$bd = '<h1>Työntekijä ei löyty!!!</h1>';
+			$this->_sendResponse(200, CJSON::encode($bd));
+			exit;
+		}
+
+
+		if(isset($tt->id) and isset($tags->id) and $tags->status == 1)
+		{
+
+			$lopetus = date("Y-m-d H:i:s");
+			Tags::model()->updatebypk($tags->id, array('status'=>11, 'lopetus'=>$lopetus));
+			$bd = '';
+			$bd .= '
+			<center>
+			<p>
+			    <h1>'.$tt->etunimi.' '.$tt->sukunimi.'</h1><br>
+			    <h3>Työ lopetus: '.date("d.m.Y H:i", strtotime($lopetus)).'</h3>
+			</p>
+			</center>';
+
+				$this->_sendResponse(200, CJSON::encode($bd));
+				exit;
+		}
+
+		if(isset($tt->id) and isset($tags->id) and $tags->status == 2)
+		{
+
+			$lopetus = date("Y-m-d H:i:s");
+			Tags::model()->updatebypk($tags->id, array('status'=>22, 'lopetus'=>$lopetus));
+			$bd = '';
+			$bd .= '
+			<center>
+			<p>
+			    <h1>'.$tt->etunimi.' '.$tt->sukunimi.'</h1><br>
+			    <h3>Lounastauko lopetus: '.date("d.m.Y H:i", strtotime($lopetus)).'</h3>
+			</p>
+			</center>';
+
+				$this->_sendResponse(200, CJSON::encode($bd));
+				exit;
+		}
+
+            break;
+        default:
+            $this->_sendResponse(501, 
+                sprintf('Mode <b>create</b> is not implemented for model <b>%s</b>',
+                $_GET['model']) );
+                Yii::app()->end();
+    }
+
+}
+
+
+
+
 
 
 
