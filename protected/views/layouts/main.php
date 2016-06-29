@@ -68,7 +68,7 @@ Yii::app()->clientScript->registerPackage('bootstrapCSS');
 
 	<?php if(!Yii::app()->user->isGuest) : ?>
         <li><?php echo CHtml::link('Tunnit',Yii::app()->request->baseUrl.'/index.php/tags/index'); ?></li>
-        <li><?php echo CHtml::link('Työntekijät',Yii::app()->request->baseUrl.'/index.php/tags/index'); ?></li>
+        <li><?php echo CHtml::link('Työntekijät',Yii::app()->request->baseUrl.'/index.php/tyontekijat/index'); ?></li>
 	<?php endif; ?>
 
       <li class="dropdown">
