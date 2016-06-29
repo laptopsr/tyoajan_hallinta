@@ -32,7 +32,7 @@ class TagsController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
+				'actions'=>array('create','update','index_ajax'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -117,15 +117,44 @@ class TagsController extends Controller
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
 	}
 
-	/**
-	 * Lists all models.
-	 */
+
+	public function actionIndex_ajax()
+	{
+
+	function sprint($val){
+	    if($val > 0)
+		return sprintf('%02d:%02d', $val/3600, ($val % 3600)/60);
+	}
+
+
+		$model = Tags::model()->find("id!='' order by id DESC");
+		if(isset($_POST['setRivi']))
+		$this->renderPartial('_view', array('data' => $model));
+		else
+		echo $model->id;
+
+	}
+
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Tags');
-		$this->render('index',array(
-			'dataProvider'=>$dataProvider,
+
+       		$criteria = new CDbCriteria();
+
+        	$criteria->order = " 
+		aloitus < DATE_ADD(NOW(), interval 4 hour) AND status IN (1,2) AND lopetus='' DESC, 
+		time and status IN (1,2) AND lopetus='' DESC, 
+		time DESC ";
+		$dataProvider=new CActiveDataProvider('Tags', array(
+			'criteria'=>$criteria,
+			//'pagination'=>false
 		));
+
+		$dataProvider->pagination->pageSize = 50;
+
+		if(isset($_POST['index_ajax']))
+		$this->renderPartial('index_a', array('dataProvider' => $dataProvider));
+		else
+		$this->render('index', array('dataProvider' => $dataProvider));
 	}
 
 	/**

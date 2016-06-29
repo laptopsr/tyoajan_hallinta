@@ -1,76 +1,31 @@
 
-
-var appNFC = {
- // Application Constructor
- initialize: function() {
- this.bindEvents();
- console.log("Starting NFC Reader app");
- },
- // Bind Event Listeners
- bindEvents: function() {
- document.addEventListener('deviceready', this.onDeviceReady, false);
- },
- // deviceready Event Handler 
- onDeviceReady: function() {
- //app.receivedEvent('deviceready');
- nfc.addTagDiscoveredListener(
- appNFC.onNfc, // tag successfully scanned
- function (status) { // listener successfully initialized
- //app.display("Tap a tag to read its id number.");
- },
- function (error) { // listener fails to initialize
- appNFC.display("NFC reader failed to initialize " +
- JSON.stringify(error));
- }
- );
- },
-  
- onNfc: function(nfcEvent) {
- var tag = nfcEvent.tag;
- //app.nro(nfc.bytesToHexString(tag.id));
- appNFC.nro(tag.id);
- },
-  
- 
- nro: function(ms) {
+var url = 'http://thallinta.vetel.fi/index.php/api/tags';
+var tyontekija = '';
 
 
-   function toDec( x ){
-      var val = 0;
-      var res = 0;
-      var go = 0;
-      var fa = 1;
-       // reverse var i = x.length - 1; i >= 0; i--
-       for (var i = 0; i < x.length; i++) {  
-          res = x[i] & 0xff;
-	  go = bigInt(res).times(fa).plus(val);
-          val += bigInt(res).times(fa);
-          fa *= 256;
+function ready() {
 
-	  //console.log(go);
-       }
+    function onNfc(nfcEvent) {
 
-        return go;
-   }
-
-   	//document.getElementById('tagginro').value = toDec(ms);
-	tag = toDec(ms);
+        var tag = nfcEvent.tag;
+        var tagId = nfc.bytesToHexString(tag.id);
+   	document.getElementById('tagginro').value = tagId;
 
 
 $(document).ready(function(){
 
 
-
         $.ajax({
-           url: url+'/tag',
+           url: url+'/tarkistaminen',
 	   type:'POST',
- 	   data: { tilanne : "getObjbyTag", tag : tag },
+	   async: false,
+ 	   data: { tag_id : tagId },
            success: function(data){
         	console.log(data);
 		data = JSON.parse(data);
 
-		$("#result2").html(data).show();
-
+		tyontekija = data['tyontekija'];
+		$("#result2").html(data['bd']).show();
 
     	},
     		error:function (xhr, ajaxOptions, thrownError){
@@ -78,24 +33,121 @@ $(document).ready(function(){
 		$("#result2").html(xhr.responseText).show();
     	}
         });
+
+
 });
 
-  
+    }
+
+    function win() {
+        console.log("Listening for NFC Tags");
+    }
+
+    function fail(error) {
+        alert("Error adding NFC listener");
+    }
 
 
-
- },
-
- clear: function() {
- 	tagginro.innerHTML = "";
- },
-  
- 
-};
-
-
-
-function clearAndExit(){
-	//alert('bdfff');
-	navigator.app.exitApp();
+    nfc.addTagDiscoveredListener(onNfc, win, fail);
 }
+
+function init() {
+    document.addEventListener('deviceready', ready, false);
+}
+
+init();
+
+
+
+
+
+$(document).ready(function(){
+
+
+  $(document).delegate(".tyo","click",function(){
+   	if(tyontekija !== '')
+	{
+		tilanne(tyontekija,1);
+	}
+  });
+
+  $(document).delegate(".lounastauko","click",function(){
+   	if(tyontekija !== '')
+	{
+		tilanne(tyontekija,2);
+	}
+  });
+
+  function tilanne(tyontekija,t)
+  {
+
+
+        $.ajax({
+           url: url+'/luorivi',
+	   type:'POST',
+	   async: false,
+ 	   data: { tyontekija : tyontekija, status : t },
+           success: function(data){
+        	console.log(data);
+		data = JSON.parse(data);
+
+		$("#result2").html(data).show();
+
+    	},
+    		error:function (xhr, ajaxOptions, thrownError){
+        	console.log(xhr.responseText);
+		$("#result2").html(xhr.responseText).show();
+    	}
+        });
+
+  }
+  
+
+  $(document).delegate(".tyolopetus","click",function(){
+   	if(tyontekija !== '')
+	{
+		var tags = $(this).attr('tags');
+		tilanneLop(tyontekija,tags);
+	}
+  });
+
+  $(document).delegate(".lounastaukolopetus","click",function(){
+   	if(tyontekija !== '')
+	{
+		var tags = $(this).attr('tags');
+		tilanneLop(tyontekija,tags);
+	}
+  });
+
+  function tilanneLop(tyontekija,tags)
+  {
+
+
+        $.ajax({
+           url: url+'/suljerivi',
+	   type:'POST',
+	   async: false,
+ 	   data: { tyontekija : tyontekija, tags : tags },
+           success: function(data){
+        	console.log(data);
+		data = JSON.parse(data);
+
+		$("#result2").html(data).show();
+
+    	},
+    		error:function (xhr, ajaxOptions, thrownError){
+        	console.log(xhr.responseText);
+		$("#result2").html(xhr.responseText).show();
+    	}
+        });
+
+  }
+
+
+});
+
+
+
+
+
+

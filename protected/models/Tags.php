@@ -31,9 +31,9 @@ class Tags extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('tag_id, time, aloitus, lopetus, status, etunimi, sukunimi', 'required'),
-			array('status, etunimi, sukunimi', 'numerical', 'integerOnly'=>true),
-			array('tag_id', 'length', 'max'=>255),
+			//array('tag_id, aloitus, lopetus, status, etunimi, sukunimi', 'required'),
+			array('status, tid', 'numerical', 'integerOnly'=>true),
+			array('tag_id, etunimi, sukunimi', 'length', 'max'=>255),
 			array('aloitus, lopetus', 'length', 'max'=>50),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.

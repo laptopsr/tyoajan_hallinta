@@ -28,7 +28,7 @@ class Tyontekijat extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('tag_id, etunimi, sukunimi, status', 'required'),
+			array('tag_id, etunimi, sukunimi', 'required'),
 			array('status', 'numerical', 'integerOnly'=>true),
 			array('tag_id, etunimi, sukunimi', 'length', 'max'=>255),
 			// The following rule is used by search().

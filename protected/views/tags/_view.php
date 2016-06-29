@@ -1,43 +1,40 @@
 <?php
 /* @var $this TagsController */
 /* @var $data Tags */
+
+$tilanne = '';
+
+if($data->status == 1){
+$data->status = 'TYÖ';
+$tilanne = '<span class="btn btn-warning btn-block">avoinna<span>';
+} elseif($data->status == 11){
+$data->status = 'TYÖ';
+$tilanne = '<span class="btn btn-success btn-block">suljettu<span>';
+} elseif($data->status == 2){
+$data->status = 'LOUNASTAUKO';
+$tilanne = '<span class="btn btn-warning btn-block">avoinna<span>';
+} elseif($data->status == 22){
+$data->status = 'LOUNASTAUKO';
+$tilanne = '<span class="btn btn-success btn-block">suljettu<span>';
+}
+
+$aloitus = '';
+if(!empty($data->aloitus))
+$aloitus = date("H:i",strtotime($data->aloitus));
+
+$lopetus = '';
+if(!empty($data->lopetus))
+$lopetus = date("H:i",strtotime($data->lopetus));
 ?>
 
-<div class="view">
+<tr>
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('id')); ?>:</b>
-	<?php echo CHtml::link(CHtml::encode($data->id), array('view', 'id'=>$data->id)); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('tag_id')); ?>:</b>
-	<?php echo CHtml::encode($data->tag_id); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('time')); ?>:</b>
-	<?php echo CHtml::encode($data->time); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('aloitus')); ?>:</b>
-	<?php echo CHtml::encode($data->aloitus); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('lopetus')); ?>:</b>
-	<?php echo CHtml::encode($data->lopetus); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('status')); ?>:</b>
-	<?php echo CHtml::encode($data->status); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('etunimi')); ?>:</b>
-	<?php echo CHtml::encode($data->etunimi); ?>
-	<br />
-
-	<?php /*
-	<b><?php echo CHtml::encode($data->getAttributeLabel('sukunimi')); ?>:</b>
-	<?php echo CHtml::encode($data->sukunimi); ?>
-	<br />
-
-	*/ ?>
-
-</div>
+	<td><?php echo $data->id; ?></td>
+	<td><?php echo $data->tag_id; ?></td>
+	<td><?php echo $data->etunimi.' '.$data->sukunimi; ?></td>
+	<td><?php echo date("d.m.Y",strtotime($data->aloitus)); ?></td>
+	<td><?php echo $aloitus; ?></td>
+	<td><?php echo $lopetus; ?></td>
+	<td><?php echo $data->status; ?></td>
+	<td><?php echo $tilanne; ?></td>
+</tr>
