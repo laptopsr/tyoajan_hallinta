@@ -17,12 +17,12 @@
 
 
   } else {
-/*
-  $db = 'vetelfi_miinus';
+
+  $db = 'vetelfi_tyoajan_hallinta';
   $host = 'localhost';
-  $user = 'vetelfi_miinus';
+  $user = 'vetelfi_vetel';
   $pass = 'KristinA1';
-*/
+
   }
 
 
@@ -137,13 +137,7 @@ return array(
     'rules'=>array(
         'posts/<tag:.*?>'=>'viivakoodi/index',
         // REST patterns
-        //array('api/list', 'pattern'=>'api/<model:\w+>', 'verb'=>'GET'),
-        //array('api/view', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'GET'),
-        array('api/login', 'pattern'=>'api/<model:\w+>/login', 'verb'=>'POST'),
-        //array('api/update', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'PUT'),
-        //array('api/updaterow', 'pattern'=>'api/<model:\w+>/updaterow/<id:\d+>', 'verb'=>'POST'),
-        //array('api/delete', 'pattern'=>'api/<model:\w+>/<id:\d+>', 'verb'=>'DELETE'),
-        //array('api/create', 'pattern'=>'api/<model:\w+>', 'verb'=>'POST'),
+        array('api/tag', 'pattern'=>'api/<model:\w+>/tag', 'verb'=>'POST'),
         // Other controllers
         '<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
     ),
